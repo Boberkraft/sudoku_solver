@@ -276,6 +276,7 @@ class App:
 
 if __name__ == '__main__':
     root = Tk()
+    root.wm_title("Solver")
     app = App(root)
     mainloop()
 
