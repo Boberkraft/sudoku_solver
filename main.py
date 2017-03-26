@@ -13,7 +13,7 @@ class App:
     # gui
     solution = []  # list containing solluton eg. puzzle to edit, StringVars
     solution_widgets = []  # Labels
-    tries = None  # IntVar. number of /solve/ calls
+    calls = None  # IntVar. number of /solve/ calls
     depth = None  # IntVar. depth
     # solving thread
     th = None  # solving thread
@@ -44,8 +44,8 @@ class App:
 
         iter_panel = LabelFrame(info_panel, text='Calls')
         iter_panel.grid(row=0, column=0)
-        self.tries = IntVar(value=-1)                       # inits tries
-        Label(iter_panel, textvariable=self.tries).pack()
+        self.calls = IntVar(value=-1)                       # inits tries
+        Label(iter_panel, textvariable=self.calls).pack()
 
         puzzle_panel = LabelFrame(left_panel, text='Puzzle')
         puzzle_panel.grid(row=0, column=0)
@@ -133,7 +133,7 @@ class App:
             self.restarting = False
             self.size = len(self.solution)
             self.block = int(sqrt(self.size))
-            self.tries.set(0)  # created in __init__
+            self.calls.set(0)  # created in __init__
             self.steps_to_do = IntVar(value=0)
             self.no_more_steps.clear()
             # self.depth is in __init__ because it
@@ -192,9 +192,7 @@ class App:
             # n = 1 if self.steps_to_do.get() > 0 else 0  # just to don't do -1
             self.steps_to_do.set(self.steps_to_do.get() + add)  # changes number of steps
         else:
-            print(self.steps_to_do.get(), set_to)
             self.steps_to_do.set(set_to)
-            print(self.steps_to_do.get())
         if self.steps_to_do.get() > 0:
             self.no_more_steps.set()
         self.counter_lock.release()
@@ -214,7 +212,7 @@ class App:
         def helper(self, *args, **kwargs):
             self.locker()  # locks thread and counts number of iterations]
             self.depth.set(self.depth.get() + 1)  # depth + 1
-            self.tries.set(self.tries.get() + 1)  # add to counter
+            self.calls.set(self.calls.get() + 1)  # add to counter
             res = ff(self, *args, **kwargs)  # calls call_counter
             self.depth.set(self.depth.get() - 1)  # depth + 1
             return res
