@@ -65,7 +65,7 @@ class App:
 
         def step(x):
             # Helper function to add steps
-            return lambda: self.add_steps(x)
+            return lambda: self.change_steps(add=x)
 
         # buttons for adding steps
         for y, num in enumerate([[1, 1], [10, 10], [100, 100], ['All', 9999999]]):
@@ -146,10 +146,11 @@ class App:
         else:
             # Joining thread block everything forever.
             # Maybe main thread needs to be active?
-            self.steps_to_do.set(0)
-            self.add_steps(99999)  # adds infinite steps
+            if not self.restarting: self.change_steps(set_to=99999)  # adds infinite steps
             self.restarting = True  # enable shortcut
+
             root.after(10, self.restart)  # callback itself to check if thread exited
+
 
     def display_nums(self):
         """Makes Label widgets for displaying sudoku as a table"""
@@ -183,27 +184,30 @@ class App:
         # with that the sudoku display can by dynamically updated
         return [[make_var(num) for num in row] for row in seq]
 
-    def add_steps(self, steps):
-        self.steps_to_do.set(self.steps_to_do.get() + steps)
-        self.no_more_steps.set()
+    def change_steps(self, add=None, set_to=None):
+        """Changes number of steps"""
+        self.counter_lock.acquire()
+        if add is not None and set_to is None:
+            # n = self.steps_to_do.get()
+            # n = 1 if self.steps_to_do.get() > 0 else 0  # just to don't do -1
+            self.steps_to_do.set(self.steps_to_do.get() + add)  # changes number of steps
+        else:
+            print(self.steps_to_do.get(), set_to)
+            self.steps_to_do.set(set_to)
+            print(self.steps_to_do.get())
+        if self.steps_to_do.get() > 0:
+            self.no_more_steps.set()
+        self.counter_lock.release()
 
     def locker(self):
         """Lock solving thread in place"""
-
         if self.steps_to_do.get() <= 0:
             # no more steps for you to do
             print('Thread: No more steps')
             self.no_more_steps.clear()
             self.no_more_steps.wait()  # waits for more steps
             print('Thread: Resuming serching')
-
-        self.counter_lock.acquire()  # locks access to steps_to_do
-
-        n = self.steps_to_do.get()
-        n = 1 if self.steps_to_do.get() > 0 else 0  # just to don't do -1
-        self.steps_to_do.set(self.steps_to_do.get() - n)  # changes number of steps
-
-        self.counter_lock.release()  # unlocks access to steps_to_do
+        self.change_steps(-1)
 
     def call_counter(ff):
         """Count depth, tries and calls solve()"""
