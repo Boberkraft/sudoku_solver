@@ -5,16 +5,21 @@ from tkinter.filedialog import askopenfilename
 from DataManager import DataManager
 from math import sqrt
 
+# author Andrzej Bisewski
+# andrzej.bisewski@gmail.com
 
 class App:
+
     # map
     loaded_map = []  # Loaded map. 2d array of numbers
     puzzle = []  # list containing unedited puzzle, StringVars
-    # gui
     solution = []  # list containing solluton eg. puzzle to edit, StringVars
+
+    # gui
     solution_widgets = []  # Labels
     calls = None  # IntVar. number of /solve/ calls
     depth = None  # IntVar. depth
+
     # solving thread
     th = None  # solving thread
     restarting = False  # enabled shortcut for solving thread
