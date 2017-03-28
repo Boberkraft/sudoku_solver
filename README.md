@@ -1,8 +1,10 @@
 # Sudoku solving program
-Made with python3 but with little changes should work with py2 as well
 
 It have nice gui so just load map and have fun.
 
 ![program in action](demo.gif)
 
-You can add your own sudoku using text editor
+- Calls - how many times solving function have been called (placed number)
+- Depth - depth of recursion
+
+You can add your own sudoku using text editor just look at maps folder and open one of .sudoku file
